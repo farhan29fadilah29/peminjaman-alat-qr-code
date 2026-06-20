@@ -1,0 +1,668 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SILAB QR - SMK Amaliah Ciawi</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="https://unpkg.com/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .heading-font { font-family: 'Plus Jakarta Sans', sans-serif; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-900 antialiased min-h-screen flex flex-col justify-between">
+
+    <div id="auth-container" class="flex-grow flex items-center justify-center p-4 bg-gradient-to-br from-slate-900 via-slate-950 to-slate-900 transition-all duration-500">
+        <div class="w-full max-w-md bg-white/5 backdrop-blur-xl border border-white/10 p-8 rounded-3xl shadow-2xl text-white">
+            <div class="text-center mb-8">
+                <div id="login-icon-box" class="inline-block bg-gradient-to-tr from-indigo-500 to-blue-600 text-white p-3.5 rounded-2xl font-bold shadow-lg shadow-indigo-500/20 mb-3 transition-all duration-300">
+                    <i class="fa-solid fa-qrcode text-3xl"></i>
+                </div>
+                <h2 class="text-2xl font-extrabold tracking-tight heading-font">SILAB QR</h2>
+                <p class="text-xs text-slate-400 mt-1">Sistem Informasi Laboratorium & Inventaris - SMK Amaliah Ciawi</p>
+                
+                <div class="flex mt-6 bg-slate-950/60 p-1 rounded-xl border border-white/5">
+                    <button onclick="toggleLoginTab('siswa')" id="tab-siswa" class="w-1/2 py-2 text-xs font-semibold rounded-lg transition-all bg-white/10 text-white shadow-sm">
+                        <i class="fa-solid fa-user-graduate mr-1.5"></i> Portal Siswa
+                    </button>
+                    <button onclick="toggleLoginTab('pengelola')" id="tab-pengelola" class="w-1/2 py-2 text-xs font-semibold rounded-lg transition-all text-slate-400 hover:text-white">
+                        <i class="fa-solid fa-user-tie mr-1.5"></i> Staf Pengelola
+                    </button>
+                </div>
+            </div>
+
+            <form id="form-login-siswa" onsubmit="handleLoginSiswa(event)" class="space-y-4">
+                <div>
+                    <label class="text-[11px] font-bold tracking-wider text-slate-400 block mb-1.5 uppercase">NIPD / NISN Siswa</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-id-card absolute left-4 top-3.5 text-slate-500 text-sm"></i>
+                        <input type="text" id="login-nisn" placeholder="Masukkan nomor induk siswa" required class="w-full bg-slate-900/50 border border-white/10 rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-slate-600 focus:ring-2 focus:ring-indigo-500 focus:border-transparent focus:outline-none transition">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-[11px] font-bold tracking-wider text-slate-400 block mb-1.5 uppercase">Nama Lengkap</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-user absolute left-4 top-3.5 text-slate-500 text-sm"></i>
+                        <input type="text" id="login-nama-siswa" placeholder="Masukkan nama lengkap" required class="w-full bg-slate-900/50 border border-white/10 rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-slate-600 focus:ring-2 focus:ring-indigo-500 focus:border-transparent focus:outline-none transition">
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-semibold py-3 rounded-xl transition shadow-lg shadow-indigo-600/20 active:scale-[0.99]">
+                    Masuk Ke Portal Siswa <i class="fa-solid fa-arrow-right ml-1"></i>
+                </button>
+            </form>
+
+            <form id="form-login-pengelola" onsubmit="handleLoginPengelola(event)" class="space-y-4 hidden">
+                <div>
+                    <label class="text-[11px] font-bold tracking-wider text-slate-400 block mb-1.5 uppercase">ID Username</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-user-shield absolute left-4 top-3.5 text-slate-500 text-sm"></i>
+                        <input type="text" id="admin-user" placeholder="Username pengelola (admin)" required class="w-full bg-slate-900/50 border border-white/10 rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-slate-600 focus:ring-2 focus:ring-zinc-500 focus:border-transparent focus:outline-none transition">
+                    </div>
+                </div>
+                <div>
+                    <label class="text-[11px] font-bold tracking-wider text-slate-400 block mb-1.5 uppercase">Kata Sandi</label>
+                    <div class="relative">
+                        <i class="fa-solid fa-lock absolute left-4 top-3.5 text-slate-500 text-sm"></i>
+                        <input type="password" id="admin-pass" placeholder="Password akses (admin123)" required class="w-full bg-slate-900/50 border border-white/10 rounded-xl pl-11 pr-4 py-3 text-sm text-white placeholder-zinc-600 focus:ring-2 focus:ring-zinc-500 focus:border-transparent focus:outline-none transition">
+                    </div>
+                </div>
+                <button type="submit" class="w-full bg-zinc-100 hover:bg-white text-zinc-950 font-bold py-3 rounded-xl transition shadow-xl active:scale-[0.99]">
+                    Otorisasi Pengelola <i class="fa-solid fa-shield-check ml-1"></i>
+                </button>
+            </form>
+        </div>
+    </div>
+
+
+    <div id="page-siswa" class="hidden flex-grow flex bg-indigo-50/30">
+        <aside class="w-64 bg-indigo-950 text-indigo-200 flex flex-col justify-between border-r border-indigo-900 shrink-0">
+            <div class="p-6 space-y-6">
+                <div class="flex items-center space-x-3 border-b border-indigo-900 pb-5">
+                    <div class="bg-gradient-to-tr from-indigo-500 to-blue-500 text-white p-2.5 rounded-xl text-center shadow-md"><i class="fa-solid fa-user-graduate text-sm"></i></div>
+                    <div class="truncate">
+                        <h4 class="text-white font-bold text-xs tracking-tight uppercase heading-font truncate" id="sidebar-siswa-nama">Nama Siswa</h4>
+                        <span class="text-[10px] text-indigo-400 block font-semibold uppercase tracking-wider">Akses Portal Siswa</span>
+                    </div>
+                </div>
+
+                <nav class="space-y-1">
+                    <button onclick="switchSiswaMenu('siswa-dashboard')" id="nav-siswa-dashboard" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-semibold bg-indigo-900 text-white transition">
+                        <i class="fa-solid fa-chart-pie w-4 text-center text-indigo-400"></i> <span>Dashboard Utama</span>
+                    </button>
+                    <button onclick="switchSiswaMenu('siswa-scan')" id="nav-siswa-scan" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-indigo-300 hover:bg-indigo-900 hover:text-white transition">
+                        <i class="fa-solid fa-qrcode w-4 text-center text-emerald-400"></i> <span>Scan & Ajukan Log</span>
+                    </button>
+                    <button onclick="switchSiswaMenu('siswa-riwayat')" id="nav-siswa-riwayat" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-indigo-300 hover:bg-indigo-900 hover:text-white transition">
+                        <i class="fa-solid fa-clock-rotate-left w-4 text-center text-amber-400"></i> <span>Status Validasi</span>
+                    </button>
+                </nav>
+            </div>
+
+            <div class="p-4 border-t border-indigo-900">
+                <button onclick="handleLogout()" class="w-full bg-indigo-900/60 hover:bg-indigo-900 text-white text-[10px] font-bold py-2 px-3 rounded-lg transition text-left flex items-center"><i class="fa-solid fa-right-from-bracket mr-2 text-indigo-400"></i> Keluar Sesi Portal</button>
+            </div>
+        </aside>
+
+        <main class="flex-grow p-8 overflow-y-auto max-w-5xl mx-auto w-full">
+            
+            <div id="siswa-dashboard" class="space-y-6">
+                <div class="border-b border-indigo-100 pb-4">
+                    <h2 class="text-xl font-bold text-slate-900 heading-font">Ringkasan Aktivitas Anda</h2>
+                    <p class="text-xs text-slate-400 mt-0.5">Informasi instan mengenai sirkulasi barang laboratorium dan buku yang Anda bawa.</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                    <button onclick="switchSiswaMenu('siswa-riwayat')" class="bg-white p-5 rounded-2xl shadow-sm border border-indigo-100 flex items-center justify-between text-left hover:border-indigo-500 hover:shadow-md transition active:scale-[0.98]">
+                        <div>
+                            <span class="text-[11px] font-bold text-slate-400 uppercase block">Total Pengajuan</span>
+                            <span class="text-2xl font-black text-slate-900 mt-1 block heading-font" id="siswa-stat-total">0</span>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center"><i class="fa-solid fa-receipt"></i></div>
+                    </button>
+
+                    <button onclick="switchSiswaMenu('siswa-riwayat')" class="bg-white p-5 rounded-2xl shadow-sm border border-indigo-100 flex items-center justify-between text-left hover:border-amber-500 hover:shadow-md transition active:scale-[0.98]">
+                        <div>
+                            <span class="text-[11px] font-bold text-slate-400 uppercase block">Menunggu Validasi</span>
+                            <span class="text-2xl font-black text-amber-500 mt-1 block heading-font" id="siswa-stat-pending">0</span>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-500 flex items-center justify-center"><i class="fa-solid fa-clock animate-pulse"></i></div>
+                    </button>
+
+                    <button onclick="switchSiswaMenu('siswa-riwayat')" class="bg-white p-5 rounded-2xl shadow-sm border border-indigo-100 flex items-center justify-between text-left hover:border-emerald-500 hover:shadow-md transition active:scale-[0.98]">
+                        <div>
+                            <span class="text-[11px] font-bold text-slate-400 uppercase block">Pinjaman Aktif</span>
+                            <span class="text-2xl font-black text-emerald-500 mt-1 block heading-font" id="siswa-stat-approved">0</span>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-500 flex items-center justify-center"><i class="fa-solid fa-circle-check"></i></div>
+                    </button>
+                </div>
+
+                <div class="bg-gradient-to-r from-indigo-950 to-indigo-900 p-6 rounded-2xl text-white shadow-md flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h4 class="text-sm font-bold heading-font">Butuh Meminjam atau Mengembalikan Barang?</h4>
+                        <p class="text-xs text-indigo-200 mt-1">Gunakan modul kamera pemindai internal untuk memproses stiker QR Code aset secara langsung.</p>
+                    </div>
+                    <button onclick="switchSiswaMenu('siswa-scan')" class="bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-bold px-4 py-2.5 rounded-xl transition shadow-md whitespace-nowrap">Buka Scanner Kamera <i class="fa-solid fa-arrow-right ml-1"></i></button>
+                </div>
+            </div>
+
+            <div id="siswa-scan" class="space-y-6 hidden">
+                <div class="border-b border-indigo-100 pb-4">
+                    <h2 class="text-xl font-bold text-slate-900 heading-font">Layanan Pemindai QR Mandiri</h2>
+                    <p class="text-xs text-slate-400 mt-0.5">Arahkan kamera ke QR Code barang laboratorium untuk mengidentifikasi database secara otomatis.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <div class="lg:col-span-6 bg-white border border-indigo-100 rounded-2xl p-5 flex flex-col justify-between min-h-[360px] shadow-sm">
+                        <div class="w-full flex justify-between items-center border-b border-slate-100 pb-3 mb-3">
+                            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider"><i class="fa-solid fa-camera mr-1.5 text-indigo-500"></i>Sensor Lensa</h3>
+                            <span id="camera-status-badge" class="inline-flex items-center rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-500 border border-slate-200">Kamera Off</span>
+                        </div>
+                        <div class="w-full bg-indigo-950 rounded-xl overflow-hidden relative flex items-center justify-center aspect-video shadow-inner">
+                            <div id="reader" class="w-full overflow-hidden rounded-xl"></div>
+                            <div id="scanner-placeholder" class="absolute inset-0 flex flex-col items-center justify-center text-center p-4 bg-indigo-950/95 z-10">
+                                <i class="fa-solid fa-qrcode text-xl text-indigo-400 animate-pulse mb-2"></i>
+                                <p class="text-xs text-slate-200 font-bold">Kamera Belum Aktif</p>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex gap-2">
+                            <button onclick="startScanner()" class="flex-1 bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2 rounded-xl text-xs transition flex items-center justify-center space-x-1.5"><i class="fa-solid fa-play text-[10px]"></i> <span>Aktifkan</span></button>
+                            <button onclick="stopScanner()" class="bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold px-3 py-2 rounded-xl text-xs transition"><i class="fa-solid fa-video-slash"></i></button>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-6 bg-white border border-indigo-100 rounded-2xl p-5 flex flex-col justify-between shadow-sm">
+                        <div class="space-y-4">
+                            <h3 class="text-xs font-bold text-slate-800 uppercase tracking-wider border-b border-slate-100 pb-3"><i class="fa-solid fa-file-invoice mr-1.5 text-indigo-500"></i>Data Sirkulasi</h3>
+                            <div>
+                                <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">Hasil Scan Barcode</label>
+                                <input type="text" id="tool-name" readonly placeholder="Menunggu pemindaian kode..." class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-bold text-slate-800 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">Nama Konfirmasi</label>
+                                <input type="text" id="borrower-name" readonly class="w-full bg-slate-50 border border-slate-200 rounded-xl px-3 py-2 text-xs font-semibold text-slate-500 focus:outline-none">
+                            </div>
+                            <div>
+                                <label class="text-[10px] font-bold text-slate-400 block mb-1 uppercase tracking-wider">Opsi Keperluan</label>
+                                <select id="transaction-type" class="w-full border border-slate-200 bg-white rounded-xl px-3 py-2 text-xs font-bold text-slate-700 focus:outline-none cursor-pointer">
+                                    <option value="Pinjam">Ajukan Permohonan PINJAM BARU</option>
+                                    <option value="Kembali">Ajukan PENGEMBALIAN BARANG LOG</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button onclick="processTransaction()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-bold py-2.5 rounded-xl text-xs transition mt-4 shadow-sm">Kirim Log Pengajuan <i class="fa-solid fa-paper-plane ml-1"></i></button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="siswa-riwayat" class="space-y-6 hidden">
+                <div class="border-b border-indigo-100 pb-4">
+                    <h2 class="text-xl font-bold text-slate-900 heading-font">Log Persetujuan Pengajuan</h2>
+                    <p class="text-xs text-slate-400 mt-0.5">Daftar riwayat lengkap pengajuan sirkulasi dan status validasi resmi dari staf laboratorium.</p>
+                </div>
+
+                <div class="bg-white rounded-2xl shadow-sm border border-indigo-100 p-6 overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="text-slate-400 text-[10px] font-bold uppercase tracking-wider border-b border-slate-100">
+                                <th class="py-3 px-4">Waktu Log</th>
+                                <th class="py-3 px-4">Deskripsi Alat / Buku</th>
+                                <th class="py-3 px-4">Jenis Transaksi</th>
+                                <th class="py-3 px-4">Status Validasi Laboran</th>
+                            </tr>
+                        </thead>
+                        <tbody id="siswa-log-table-body" class="text-xs text-slate-600 divide-y divide-slate-100"></tbody>
+                    </table>
+                </div>
+            </div>
+        </main>
+    </div>
+
+
+    <div id="page-pengelola" class="hidden flex-grow flex bg-zinc-100/50">
+        <aside class="w-64 bg-zinc-900 text-zinc-300 flex flex-col justify-between border-r border-zinc-800 shrink-0">
+            <div class="p-6 space-y-6">
+                <div class="flex items-center space-x-3 border-b border-zinc-800 pb-5">
+                    <div class="bg-zinc-800 text-zinc-100 p-2.5 rounded-xl border border-zinc-700 text-center"><i class="fa-solid fa-user-shield text-sm"></i></div>
+                    <div>
+                        <h4 class="text-white font-bold text-xs tracking-tight heading-font">STAF LAB KONTROL</h4>
+                        <span class="text-[10px] text-zinc-500 block font-mono">Role: Super Admin</span>
+                    </div>
+                </div>
+
+                <nav class="space-y-1">
+                    <button onclick="switchAdminMenu('modul-dashboard')" id="nav-dashboard" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-semibold bg-zinc-800 text-white transition">
+                        <i class="fa-solid fa-chart-pie w-4 text-center text-zinc-400"></i> <span>Dashboard Ringkasan</span>
+                    </button>
+                    <button onclick="switchAdminMenu('modul-transaksi')" id="nav-transaksi" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-zinc-400 hover:bg-zinc-800 hover:text-white transition">
+                        <i class="fa-solid fa-shuffle w-4 text-center text-zinc-400"></i> <span>Log Transaksi</span>
+                    </button>
+                    <button onclick="switchAdminMenu('modul-inventaris')" id="nav-inventaris" class="w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-zinc-400 hover:bg-zinc-800 hover:text-white transition">
+                        <i class="fa-solid fa-boxes-stacked w-4 text-center text-zinc-400"></i> <span>Master Inventaris</span>
+                    </button>
+                </nav>
+            </div>
+
+            <div class="p-4 border-t border-zinc-800 space-y-2">
+                <button onclick="clearDatabase()" class="w-full bg-red-950/40 hover:bg-red-900/50 text-red-400 text-[10px] font-bold py-2 px-3 rounded-lg border border-red-900/30 transition text-left"><i class="fa-solid fa-trash-can mr-2"></i> Reset Sistem Lokal</button>
+                <button onclick="handleLogout()" class="w-full bg-zinc-800 hover:bg-zinc-700 text-white text-[10px] font-bold py-2 px-3 rounded-lg transition text-left"><i class="fa-solid fa-right-from-bracket mr-2 text-zinc-500"></i> Keluar Sesi Admin</button>
+            </div>
+        </aside>
+
+        <main class="flex-grow p-8 overflow-y-auto max-w-5xl mx-auto w-full">
+            
+            <div id="modul-dashboard" class="space-y-6">
+                <div class="border-b border-zinc-200 pb-4">
+                    <h2 class="text-xl font-bold text-zinc-900 heading-font">Statistik Logistik Real-Time</h2>
+                    <p class="text-xs text-zinc-400 mt-0.5">Ringkasan kondisi sirkulasi alat laboratorium dan buku paket hari ini.</p>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <button onclick="switchAdminMenu('modul-inventaris')" class="bg-white p-5 rounded-2xl shadow-sm border border-zinc-200 flex items-center justify-between text-left hover:border-zinc-500 hover:shadow-md transition active:scale-[0.98]">
+                        <div>
+                            <span class="text-[11px] font-bold text-zinc-400 uppercase block">Total Jenis Aset</span>
+                            <span class="text-2xl font-black text-zinc-900 mt-1 block heading-font" id="stat-total">0</span>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-zinc-50 flex items-center justify-center text-zinc-500"><i class="fa-solid fa-box"></i></div>
+                    </button>
+
+                    <button onclick="switchAdminMenu('modul-transaksi'); switchTransactionTab('tab-pinjam');" class="bg-white p-5 rounded-2xl shadow-sm border border-zinc-200 flex items-center justify-between text-left hover:border-zinc-500 hover:shadow-md transition active:scale-[0.98]">
+                        <div>
+                            <span class="text-[11px] font-bold text-zinc-400 uppercase block">Butuh Otorisasi</span>
+                            <span class="text-2xl font-black text-zinc-900 mt-1 block heading-font" id="stat-pending">0</span>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-zinc-50 text-zinc-600 flex items-center justify-center"><i class="fa-solid fa-bell animate-pulse"></i></div>
+                    </button>
+
+                    <button onclick="switchAdminMenu('modul-transaksi'); switchTransactionTab('tab-pinjam');" class="bg-white p-5 rounded-2xl shadow-sm border border-zinc-200 flex items-center justify-between text-left hover:border-zinc-500 hover:shadow-md transition active:scale-[0.98]">
+                        <div>
+                            <span class="text-[11px] font-bold text-zinc-400 uppercase block">Peminjaman Aktif</span>
+                            <span class="text-2xl font-black text-zinc-900 mt-1 block heading-font" id="stat-aktif">0</span>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-zinc-50 text-zinc-600 flex items-center justify-center"><i class="fa-solid fa-hand-holding-hand"></i></div>
+                    </button>
+
+                    <button onclick="switchAdminMenu('modul-transaksi'); switchTransactionTab('tab-kembali');" class="bg-white p-5 rounded-2xl shadow-sm border border-zinc-200 flex items-center justify-between text-left hover:border-zinc-500 hover:shadow-md transition active:scale-[0.98]">
+                        <div>
+                            <span class="text-[11px] font-bold text-zinc-400 uppercase block">Arsip Berkas Log</span>
+                            <span class="text-2xl font-black text-zinc-900 mt-1 block heading-font" id="stat-logs">0</span>
+                        </div>
+                        <div class="w-10 h-10 rounded-xl bg-zinc-50 text-zinc-600 flex items-center justify-center"><i class="fa-solid fa-receipt"></i></div>
+                    </button>
+                </div>
+            </div>
+
+            <div id="modul-transaksi" class="space-y-6 hidden">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center border-b border-zinc-200 pb-4 gap-3">
+                    <div>
+                        <h2 class="text-xl font-bold text-zinc-900 heading-font">Validasi Pengajuan Sirkulasi</h2>
+                        <p class="text-xs text-zinc-400 mt-0.5">Konfirmasi permohonan pinjam atau terima pengembalian barang dari siswa.</p>
+                    </div>
+                    <div class="flex bg-zinc-200 p-1 rounded-xl text-xs font-semibold">
+                        <button onclick="switchTransactionTab('tab-pinjam')" id="btn-tab-pinjam" class="px-4 py-1.5 rounded-lg transition bg-white text-zinc-900 shadow-sm"><i class="fa-solid fa-upload text-zinc-500 mr-1.5"></i> Antrean Peminjaman</button>
+                        <button onclick="switchTransactionTab('tab-kembali')" id="btn-tab-kembali" class="px-4 py-1.5 rounded-lg transition text-zinc-500 hover:text-zinc-900"><i class="fa-solid fa-download text-zinc-500 mr-1.5"></i> Antrean Pengembalian</button>
+                    </div>
+                </div>
+
+                <div id="panel-peminjaman" class="bg-white rounded-2xl border border-zinc-200 p-6 overflow-x-auto shadow-sm">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="text-zinc-400 text-[10px] font-bold uppercase border-b border-zinc-100"><th class="py-2.5 px-3">Waktu</th><th class="py-2.5 px-3">Nama Barang</th><th class="py-2.5 px-3">Nama Siswa</th><th class="py-2.5 px-3">Status</th><th class="py-2.5 px-3 text-center">Aksi Otoritas</th></tr>
+                        </thead>
+                        <tbody id="table-peminjaman-body" class="text-xs text-zinc-600 divide-y divide-zinc-100"></tbody>
+                    </table>
+                </div>
+
+                <div id="panel-pengembalian" class="bg-white rounded-2xl border border-zinc-200 p-6 overflow-x-auto hidden shadow-sm">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="text-zinc-400 text-[10px] font-bold uppercase border-b border-zinc-100"><th class="py-2.5 px-3">Waktu</th><th class="py-2.5 px-3">Nama Barang</th><th class="py-2.5 px-3">Nama Siswa</th><th class="py-2.5 px-3">Status</th><th class="py-2.5 px-3 text-center">Aksi Otoritas</th></tr>
+                        </thead>
+                        <tbody id="table-pengembalian-body" class="text-xs text-zinc-600 divide-y divide-zinc-100"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div id="modul-inventaris" class="space-y-6 hidden">
+                <div class="border-b border-zinc-200 pb-4">
+                    <h2 class="text-xl font-bold text-zinc-900 heading-font">Registrasi Inventaris Lab</h2>
+                    <p class="text-xs text-zinc-400 mt-0.5">Daftarkan komoditas barang baru dan generate matriks cetak stiker barcode QR Code.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                    <div class="lg:col-span-5 bg-white border border-zinc-200 rounded-2xl p-5 space-y-4 h-fit shadow-sm">
+                        <h3 class="text-xs font-bold text-zinc-800 uppercase tracking-wider heading-font"><i class="fa-solid fa-square-plus mr-2 text-zinc-500"></i>Input Barang Baru</h3>
+                        <form id="add-tool-form" onsubmit="addTool(event)" class="space-y-3">
+                            <input type="text" id="new-tool-id" placeholder="Kode Barang (Misal: LAB-MIC-01)" required class="w-full border border-zinc-200 rounded-xl px-3 py-2 text-xs font-medium focus:ring-2 focus:ring-zinc-500 focus:outline-none">
+                            <input type="text" id="new-tool-name" placeholder="Nama Komoditas Barang / Buku" required class="w-full border border-zinc-200 rounded-xl px-3 py-2 text-xs font-medium focus:ring-2 focus:ring-zinc-500 focus:outline-none">
+                            <button type="submit" class="w-full bg-zinc-900 hover:bg-zinc-800 text-white font-semibold py-2.5 rounded-xl text-xs transition">Daftarkan Komoditas</button>
+                        </form>
+
+                        <div id="qr-preview-zone" class="hidden border border-zinc-200 rounded-xl p-4 flex flex-col items-center bg-zinc-50">
+                            <span class="text-[10px] font-bold text-zinc-400 mb-3 tracking-wider">MATRIKS QR SIAP CETAK</span>
+                            <div id="qrcode-canvas" class="bg-white p-2 border border-zinc-200 rounded-xl shadow-sm"></div>
+                            <p class="text-xs font-mono font-bold text-zinc-800 mt-2 text-center" id="qr-preview-label"></p>
+                            <button onclick="printQRCode()" class="mt-3 w-full bg-white hover:bg-zinc-50 border border-zinc-200 text-zinc-700 text-xs font-bold py-1.5 rounded-lg transition flex items-center justify-center space-x-2 shadow-sm"><i class="fa-solid fa-print text-zinc-400"></i> <span>Cetak Label Fisik</span></button>
+                        </div>
+                    </div>
+
+                    <div class="lg:col-span-7 bg-white border border-zinc-200 rounded-2xl p-5 shadow-sm">
+                        <h4 class="text-xs font-bold text-zinc-400 tracking-wider mb-3 uppercase">Master Database Barang Terdaftar</h4>
+                        <div id="tools-badge-container" class="space-y-2 max-h-96 overflow-y-auto pr-1"></div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <footer class="bg-white border-t border-slate-200 py-3 text-center text-[11px] text-slate-400 font-medium z-40">
+        &copy; 2026 Perancangan Sistem Informasi Peminjaman - Farhan Fadilah Maulana (SMK Amaliah Ciawi).
+    </footer>
+
+    <script>
+        let dbTools = JSON.parse(localStorage.getItem('dbTools')) || [
+            { id: "BUKU-01", name: "Buku Paket Bahasa Inggris" },
+            { id: "LAB-MIC-01", name: "Mikroskop Digital" },
+            { id: "LAB-PHM-02", name: "PH Meter Portabel" }
+        ];
+
+        let dbLogs = JSON.parse(localStorage.getItem('dbLogs')) || [
+            { idLog: 1, time: "08:15 WIB", tool: "BUKU-01 - Buku Paket Bahasa Inggris", user: "Andi Saputra", type: "Pinjam", status: "Pending" }
+        ];
+
+        let html5QrCode = null;
+        let currentRole = "";
+        let currentSiswaName = "";
+        let currentAdminTab = "tab-pinjam";
+
+        function saveToLocalStorage() {
+            localStorage.setItem('dbTools', JSON.stringify(dbTools));
+            localStorage.setItem('dbLogs', JSON.stringify(dbLogs));
+        }
+
+        function toggleLoginTab(target) {
+            const tabSiswa = document.getElementById('tab-siswa');
+            const tabPengelola = document.getElementById('tab-pengelola');
+            const formSiswa = document.getElementById('form-login-siswa');
+            const formPengelola = document.getElementById('form-login-pengelola');
+            const iconBox = document.getElementById('login-icon-box');
+
+            if (target === 'siswa') {
+                tabSiswa.className = "w-1/2 py-2 text-xs font-semibold rounded-lg transition-all bg-white/10 text-white shadow-sm";
+                tabPengelola.className = "w-1/2 py-2 text-xs font-semibold rounded-lg transition-all text-slate-400 hover:text-white";
+                formSiswa.classList.remove('hidden');
+                formPengelola.classList.add('hidden');
+                iconBox.className = "inline-block bg-gradient-to-tr from-indigo-500 to-blue-600 text-white p-3.5 rounded-2xl font-bold shadow-lg shadow-indigo-500/20 mb-3 transition-all duration-300";
+            } else {
+                tabPengelola.className = "w-1/2 py-2 text-xs font-semibold rounded-lg transition-all bg-white/10 text-white shadow-sm";
+                tabSiswa.className = "w-1/2 py-2 text-xs font-semibold rounded-lg transition-all text-slate-400 hover:text-white";
+                formPengelola.classList.remove('hidden');
+                formSiswa.classList.add('hidden');
+                iconBox.className = "inline-block bg-gradient-to-tr from-zinc-700 to-zinc-800 text-white p-3.5 rounded-2xl font-bold shadow-lg shadow-zinc-700/20 mb-3 transition-all duration-300";
+            }
+        }
+
+        function switchSiswaMenu(menuId) {
+            stopScanner();
+            const menus = ['siswa-dashboard', 'siswa-scan', 'siswa-riwayat'];
+            menus.forEach(m => document.getElementById(m).classList.add('hidden'));
+            document.getElementById(menuId).classList.remove('hidden');
+
+            const navs = ['nav-siswa-dashboard', 'nav-siswa-scan', 'nav-siswa-riwayat'];
+            navs.forEach(n => document.getElementById(n).className = "w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-indigo-300 hover:bg-indigo-900 hover:text-white transition");
+            
+            const activeNav = menuId === 'siswa-dashboard' ? 'nav-siswa-dashboard' : (menuId === 'siswa-scan' ? 'nav-siswa-scan' : 'nav-siswa-riwayat');
+            document.getElementById(activeNav).className = "w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-semibold bg-indigo-900 text-white transition";
+            renderSiswaLogs();
+        }
+
+        function switchAdminMenu(menuId) {
+            const menus = ['modul-dashboard', 'modul-transaksi', 'modul-inventaris'];
+            menus.forEach(m => document.getElementById(m).classList.add('hidden'));
+            document.getElementById(menuId).classList.remove('hidden');
+
+            const navs = ['nav-dashboard', 'nav-transaksi', 'nav-inventaris'];
+            navs.forEach(n => document.getElementById(n).className = "w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-semibold text-zinc-400 hover:bg-zinc-800 hover:text-white transition");
+            
+            const activeNav = menuId === 'modul-dashboard' ? 'nav-dashboard' : (menuId === 'modul-transaksi' ? 'nav-transaksi' : 'nav-inventaris');
+            document.getElementById(activeNav).className = "w-full flex items-center space-x-3 px-3 py-2.5 rounded-xl text-xs font-semibold bg-zinc-800 text-white transition";
+            renderAdminDashboard();
+        }
+
+        function switchTransactionTab(tabId) {
+            currentAdminTab = tabId;
+            const btnPinjam = document.getElementById('btn-tab-pinjam');
+            const btnKembali = document.getElementById('btn-tab-kembali');
+            const panelPinjam = document.getElementById('panel-peminjaman');
+            const panelKembali = document.getElementById('panel-pengembalian');
+
+            if(tabId === 'tab-pinjam') {
+                btnPinjam.className = "px-4 py-1.5 rounded-lg transition bg-white text-zinc-900 shadow-sm";
+                btnKembali.className = "px-4 py-1.5 rounded-lg transition text-zinc-500 hover:text-zinc-900";
+                panelPinjam.classList.remove('hidden');
+                panelKembali.classList.add('hidden');
+            } else {
+                btnKembali.className = "px-4 py-1.5 rounded-lg transition bg-white text-zinc-900 shadow-sm";
+                btnPinjam.className = "px-4 py-1.5 rounded-lg transition text-zinc-500 hover:text-zinc-900";
+                panelKembali.classList.remove('hidden');
+                panelPinjam.classList.add('hidden');
+            }
+            renderAdminDashboard();
+        }
+
+        function handleLoginSiswa(e) {
+            e.preventDefault();
+            const nama = document.getElementById('login-nama-siswa').value.trim();
+            currentSiswaName = nama;
+            currentRole = "siswa";
+
+            document.getElementById('sidebar-siswa-nama').innerText = nama;
+            document.getElementById('borrower-name').value = nama;
+
+            document.getElementById('auth-container').classList.add('hidden');
+            document.getElementById('page-siswa').classList.remove('hidden');
+            document.getElementById('page-pengelola').classList.add('hidden');
+            switchSiswaMenu('siswa-dashboard');
+        }
+
+        function handleLoginPengelola(e) {
+            e.preventDefault();
+            const user = document.getElementById('admin-user').value.trim();
+            const pass = document.getElementById('admin-pass').value.trim();
+
+            if (user === "admin" && pass === "admin123") {
+                currentRole = "pengelola";
+                document.getElementById('auth-container').classList.add('hidden');
+                document.getElementById('page-siswa').classList.add('hidden');
+                document.getElementById('page-pengelola').classList.remove('hidden');
+                
+                renderAdminDashboard();
+                switchAdminMenu('modul-dashboard');
+            } else {
+                alert("Otorisasi admin ditolak!");
+            }
+        }
+
+        function handleLogout() {
+            stopScanner();
+            currentRole = ""; currentSiswaName = "";
+            document.getElementById('auth-container').classList.remove('hidden');
+            document.getElementById('page-siswa').classList.add('hidden');
+            document.getElementById('page-pengelola').classList.add('hidden');
+            document.getElementById('form-login-siswa').reset();
+            document.getElementById('form-login-pengelola').reset();
+        }
+
+        function startScanner() {
+            document.getElementById('scanner-placeholder').classList.add('hidden');
+            const badge = document.getElementById('camera-status-badge');
+            badge.innerText = "Kamera Aktif";
+            badge.className = "inline-flex items-center rounded-full bg-emerald-50 px-2 py-0.5 text-[10px] font-bold text-emerald-600 border border-emerald-200 animate-pulse";
+
+            if (html5QrCode) { html5QrCode.clear(); }
+            html5QrCode = new Html5Qrcode("reader");
+            html5QrCode.start({ facingMode: "environment" }, { fps: 15, qrbox: { width: 230, height: 230 } }, (text) => {
+                document.getElementById('tool-name').value = text;
+                alert(`QR Terbaca:\n"${text}"`);
+                stopScanner();
+            }).catch(() => {
+                alert("Gagal mematangkan sensor kamera browser.");
+                stopScanner();
+            });
+        }
+
+        function stopScanner() {
+            const badge = document.getElementById('camera-status-badge');
+            if(badge) {
+                badge.innerText = "Kamera Off";
+                badge.className = "inline-flex items-center rounded-full bg-slate-100 px-2.5 py-0.5 text-[10px] font-bold text-slate-500 border border-slate-200";
+            }
+            const placeholder = document.getElementById('scanner-placeholder');
+            if(placeholder) placeholder.classList.remove('hidden');
+
+            if (html5QrCode && html5QrCode.isScanning) {
+                html5QrCode.stop().then(() => { html5QrCode.clear(); });
+            }
+        }
+
+        function renderSiswaLogs() {
+            const tableBody = document.getElementById('siswa-log-table-body');
+            if(!tableBody) return;
+            tableBody.innerHTML = "";
+            const myLogs = dbLogs.filter(log => log.user.toLowerCase() === currentSiswaName.toLowerCase());
+
+            document.getElementById('siswa-stat-total').innerText = myLogs.length;
+            document.getElementById('siswa-stat-pending').innerText = myLogs.filter(l => l.status === 'Pending').length;
+            document.getElementById('siswa-stat-approved').innerText = myLogs.filter(l => l.status === 'Disetujui' && l.type === 'Pinjam').length;
+
+            if (myLogs.length === 0) {
+                tableBody.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-slate-400">Belum ada riwayat pengajuan sirkulasi.</td></tr>`;
+                return;
+            }
+
+            myLogs.forEach(log => {
+                let statusBadge = log.status === 'Pending' ? `<span class="inline-flex items-center gap-1.5 rounded-full bg-amber-50 px-2.5 py-1 text-xs font-bold text-amber-800 border border-amber-100 animate-pulse">Menunggu Validasi</span>` : (log.status === 'Disetujui' ? `<span class="inline-flex items-center gap-1.5 rounded-full bg-emerald-50 px-2.5 py-1 text-xs font-bold text-emerald-800 border border-emerald-100">Disetujui</span>` : `<span class="inline-flex items-center gap-1.5 rounded-full bg-rose-50 px-2.5 py-1 text-xs font-bold text-rose-800 border border-rose-100">Ditolak</span>`);
+                let typeBadge = log.type === 'Pinjam' ? `<span class="px-2 py-0.5 font-bold rounded-md bg-indigo-50 text-indigo-600 text-[10px] border border-indigo-100">PINJAM</span>` : `<span class="px-2 py-0.5 font-bold rounded-md bg-emerald-50 text-emerald-600 text-[10px] border border-emerald-100">KEMBALI</span>`;
+                
+                tableBody.innerHTML += `<tr class="hover:bg-indigo-50/40 transition-all"><td class="py-3 px-4 text-slate-400 font-medium">${log.time}</td><td class="py-3 px-4 font-bold text-slate-800">${log.tool}</td><td class="py-3 px-4">${typeBadge}</td><td class="py-3 px-4">${statusBadge}</td></tr>`;
+            });
+        }
+
+        function processTransaction() {
+            const toolValue = document.getElementById('tool-name').value.trim();
+            const borrower = document.getElementById('borrower-name').value;
+            const type = document.getElementById('transaction-type').value;
+
+            if(!toolValue) { alert("Aset QR belum dideteksi!"); return; }
+            const now = new Date();
+            dbLogs.unshift({ idLog: Date.now(), time: `${String(now.getHours()).padStart(2, '0')}:${String(now.getMinutes()).padStart(2, '0')} WIB`, tool: toolValue, user: borrower, type: type, status: "Pending" });
+            saveToLocalStorage();
+            alert(`Permohonan ${type} Berhasil Dikirim.`);
+            document.getElementById('tool-name').value = "";
+            switchSiswaMenu('siswa-riwayat');
+        }
+
+        function approveAction(idLog, actionResult) {
+            const targetLog = dbLogs.find(log => log.idLog === idLog);
+            if (targetLog) { targetLog.status = actionResult; saveToLocalStorage(); renderAdminDashboard(); }
+        }
+
+        function renderAdminDashboard() {
+            document.getElementById('stat-total').innerText = dbTools.length;
+            document.getElementById('stat-logs').innerText = dbLogs.length;
+            document.getElementById('stat-pending').innerText = dbLogs.filter(l => l.status === "Pending").length;
+            document.getElementById('stat-aktif').innerText = dbLogs.filter(l => l.status === "Disetujui" && l.type === "Pinjam").length;
+
+            const badgeContainer = document.getElementById('tools-badge-container');
+            badgeContainer.innerHTML = "";
+            dbTools.forEach((t, index) => {
+                badgeContainer.innerHTML += `
+                    <div class="flex items-center justify-between p-2 bg-zinc-50 rounded-xl border border-zinc-200 text-xs">
+                        <div class="font-medium text-zinc-700 truncate max-w-[80%]"><span class="bg-zinc-200 text-zinc-800 px-1.5 py-0.5 rounded font-mono mr-1.5 text-[10px] font-bold">${t.id}</span>${t.name}</div>
+                        <div class="flex space-x-2.5">
+                            <button onclick="generateQRReal('${t.id}', '${t.name}')" class="text-zinc-400 hover:text-zinc-600 transition"><i class="fa-solid fa-qrcode"></i></button>
+                            <button onclick="deleteTool(${index})" class="text-zinc-400 hover:text-red-600 transition"><i class="fa-solid fa-trash-can"></i></button>
+                        </div>
+                    </div>`;
+            });
+
+            const tablePinjam = document.getElementById('table-peminjaman-body');
+            const tableKembali = document.getElementById('table-pengembalian-body');
+            tablePinjam.innerHTML = ""; tableKembali.innerHTML = "";
+
+            const logsPinjam = dbLogs.filter(l => l.type === "Pinjam");
+            const logsKembali = dbLogs.filter(l => l.type === "Kembali");
+
+            if(logsPinjam.length === 0) tablePinjam.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-zinc-400">Tidak ada sirkulasi peminjaman.</td></tr>`;
+            else logsPinjam.forEach(log => tablePinjam.innerHTML += buildAdminRow(log));
+
+            if(logsKembali.length === 0) tableKembali.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-zinc-400">Tidak ada sirkulasi pengembalian.</td></tr>`;
+            else logsKembali.forEach(log => tableKembali.innerHTML += buildAdminRow(log));
+        }
+
+        function buildAdminRow(log) {
+            let statusBadge = log.status === 'Pending' ? `<span class="inline-flex items-center rounded-md bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-800 border border-amber-100">Pending</span>` : (log.status === 'Disetujui' ? `<span class="inline-flex items-center rounded-md bg-emerald-50 px-2 py-0.5 text-[11px] font-medium text-emerald-800 border border-emerald-100">Disetujui</span>` : `<span class="inline-flex items-center rounded-md bg-zinc-100 px-2 py-0.5 text-[11px] font-medium text-zinc-600 border border-zinc-200">Ditolak</span>`);
+            let actionButtons = `<span class="text-[11px] text-zinc-400 font-medium"><i class="fa-solid fa-check-double mr-1 text-zinc-300"></i>Arsip</span>`;
+            
+            if(log.status === "Pending") {
+                const textBtn = log.type === 'Kembali' ? 'Terima Kembali' : 'Izinkan Pinjam';
+                const colorBtn = log.type === 'Kembali' ? 'bg-emerald-600 hover:bg-emerald-500' : 'bg-zinc-900 hover:bg-zinc-800';
+                actionButtons = `
+                    <div class="flex justify-center space-x-1">
+                        <button onclick="approveAction(${log.idLog}, 'Disetujui')" class="${colorBtn} text-white text-[10px] font-bold py-1 px-2.5 rounded-lg transition shadow-sm">${textBtn}</button>
+                        <button onclick="approveAction(${log.idLog}, 'Ditolak')" class="bg-white hover:bg-zinc-50 text-zinc-600 border border-zinc-200 text-[10px] font-bold py-1 px-2 rounded-lg transition">Tolak</button>
+                    </div>`;
+            }
+
+            return `<tr class="hover:bg-zinc-50/70 transition"><td class="py-3 px-3 text-zinc-400 font-medium">${log.time}</td><td class="py-3 px-3 font-semibold text-zinc-800">${log.tool}</td><td class="py-3 px-3 font-medium text-zinc-600">${log.user}</td><td class="py-3 px-3">${statusBadge}</td><td class="py-3 px-3 text-center">${actionButtons}</td></tr>`;
+        }
+
+        function generateQRReal(id, name) {
+            const container = document.getElementById('qrcode-canvas');
+            container.innerHTML = "";
+            new QRCode(container, { text: `${id} - ${name}`, width: 130, height: 130, colorDark: "#18181b", colorLight: "#ffffff", correctLevel: QRCode.CorrectLevel.H });
+            document.getElementById('qr-preview-label').innerText = id;
+            document.getElementById('qr-preview-zone').classList.remove('hidden');
+        }
+
+        function addTool(e) {
+            e.preventDefault();
+            const id = document.getElementById('new-tool-id').value.trim();
+            const name = document.getElementById('new-tool-name').value.trim();
+            if(dbTools.some(t => t.id.toLowerCase() === id.toLowerCase())) { alert("ID Aset terduplikasi!"); return; }
+            dbTools.push({ id, name }); saveToLocalStorage();
+            generateQRReal(id, name);
+            document.getElementById('add-tool-form').reset();
+            renderAdminDashboard();
+        }
+
+        function deleteTool(index) {
+            if(confirm("Hapus komoditas aset ini?")) { dbTools.splice(index, 1); saveToLocalStorage(); renderAdminDashboard(); }
+        }
+
+        function clearDatabase() {
+            if(confirm("Hapus total seluruh database lokal?")) { localStorage.clear(); dbTools = []; dbLogs = []; saveToLocalStorage(); renderAdminDashboard(); }
+        }
+
+        function printQRCode() {
+            const qrCanvasHTML = document.getElementById('qrcode-canvas').innerHTML;
+            const qrLabel = document.getElementById('qr-preview-label').innerText;
+            if (!qrCanvasHTML) return;
+
+            const printArea = document.createElement('div');
+            printArea.style.position = 'fixed'; printArea.style.top = '0'; printArea.style.left = '0'; printArea.style.width = '100vw'; printArea.style.height = '100vh'; printArea.style.backgroundColor = 'white'; printArea.style.zIndex = '99999'; printArea.style.display = 'flex'; printArea.style.flexDirection = 'column'; printArea.style.alignItems = 'center'; printArea.style.justifyContent = 'center'; printArea.style.fontFamily = 'monospace';
+            printArea.innerHTML = `<div style="text-align: center; border: 1px dashed #000; padding: 20px; background: white;"><div style="display: flex; justify-content: center;">${qrCanvasHTML}</div><h2 style="margin-top: 10px; font-size: 14px; font-weight: bold; color: black;">${qrLabel}</h2><p style="font-size: 8px; color: #555; margin-top: 2px;">PROPERTI LAB - SMK AMALIAH CIAWI</p></div>`;
+            document.body.appendChild(printArea);
+            setTimeout(() => { window.print(); document.body.removeChild(printArea); }, 300);
+        }
+
+        renderAdminDashboard();
+    </script>
+</body>
+</html>
