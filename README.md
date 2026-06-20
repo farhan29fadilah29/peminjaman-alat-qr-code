@@ -1,6 +1,5 @@
 Peminjaman Alat Laboratorium Berbasis QR CODE
 
 DEMO
-https://github.com/farhan29fadilah29/peminjaman-alat-qr-code.git
-
+https://farhan29fadilah29.github.io/peminjaman-alat-qr-code/
 (LOGIN SISWA DAN PENGELOLA)
